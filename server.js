@@ -16,55 +16,9 @@ app.set('port', (process.env.PORT || 1377));
 app.use(express.static('public'));
 
 var response = {
-    result: true,
-    data: [{
-        id: 0,
-        name: "小米路由器",
-        price: 399,
-        count: 1,
-        image: 'http://i01.appmifile.com/v1/MI_18455B3E4DA706226CF7535A58E875F0267/pms_1490332273.78529474.png?width=160&height=160'
-    },
-    {
-        id: 1,
-        name: "米家全景相機",
-        price: 7995,
-        count: 1,
-        image: 'http://i01.appmifile.com/f/i/g/2016overseas/mijiaquanjingxiangji800.png?width=160&height=160'
-    }]
+    result: false,
+    data: []
 };
-// for (let i = 0; i < response.data.length; i++) {
-//     console.log(response.data[i]);
-// }
-
-// 初始化資料
-MongoClient.connect(url, function (err, client) {
-    if (err) {
-        response.result = false;
-        response.message = "資料庫連接失敗，" + err.message;
-        res.json(response);
-        return;
-    }
-    const db = client.db(dbName);
-    db.collection('ntnu_40371231h', (err, collection) => {
-        if (err) {
-            console.log('資料庫內無名為 ntnu_40371231h 的 collection');
-            db.createCollection('ntnu_40371231h');
-        } else {
-            console.log('資料庫中有名為 ntnu_40371231h 的 collection，等待連線中');
-        }
-        collection.drop();
-        collection.insert(response.data, (err, result) => {
-            if (err) {
-                console.log('資料插入失敗');
-                return;
-            }
-            console.log('插入 ' + result.insertedCount + ' 筆資料');
-        });
-
-        client.close();
-        console.log('資料庫中斷連線');
-    });
-})
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
