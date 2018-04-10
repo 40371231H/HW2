@@ -125,6 +125,18 @@ app.get('/query', function (req, res) {
 
 //insert功能
 app.post('/insert', function (req, res) {
+    var data={
+        name: req.body.name,
+        price: req.body.price,
+        count: req.body.count,
+        image: req.body.image
+    };
+    
+    var response = {
+        result: true,
+        data: data
+    };
+
     // TODO 作業二 - 新增資料
     // 請將新增資料的程式碼寫在，使得將client送過來的 data 能寫入至 mongodb 中
 
@@ -138,45 +150,50 @@ app.post('/insert', function (req, res) {
         const db = client.db(dbName);
         db.collection('ntnu_40371231h', (error, collection) => {
             if (error) {
-                console.log('資料庫內無名為 ntnu_40371231h 的 collection');
-                db.createCollection('ntnu_40371231h');
+                console.log('資料庫查無名為 ntnu_40371231h 的 collection');
             } else {
                 console.log('資料庫中有名為 ntnu_40371231h 的 collection，等待連線中');
             }
 
-            collection.find().toArray((error, docs) => {
-                if (error) {
+            db.collection('ntnu_40371231h').find().toArray((err, docs) => {
+                if (err) {
                     console.log('查詢 ntnu_40371231h 資料失敗');
                     return;
                 }
-                var data = {
+
+                var insert ={
                     id: docs.length,
                     name: req.body.name,
                     price: req.body.price,
                     count: req.body.count,
                     image: req.body.image
-                };        
+                };
+                console.log(insert);
+                db.collection('ntnu_40371231h').insert(insert, (err, result) => {
+                    if (err) {
+                        console.log('資料插入失敗');
+                        return;
+                    }
+                    console.log('插入 ' + result.insertedCount + ' 筆資料');
+                });
+                db.collection('ntnu_40371231h').find().toArray((err, docs) => {
+                    if (err) {
+                        console.log('查詢 ntnu_40371231h 資料失敗');
+                        return;
+                    }else{
+                        var response = {
+                            result: true,
+                            data: docs
+                        };
+                    }
+                    // 確定動作完畢才可將 client 關閉
+                    client.close();
+                    console.log('資料庫中斷連線');
+                });
             });
-
-            
-            collection.insert(data, (error, result) => {
-                if (error) {
-                    console.log('資料插入失敗');
-                    return;
-                }
-                console.log('插入 ' + result.insertedCount + ' 筆資料');
-            });
-            // 確定動作完畢才可將 client 關閉
-            client.close();
-            console.log('資料庫中斷連線');
         });
+        res.json(response);
     })
-    
-    var response = {
-        result: true,
-        data: data
-    };
-    res.json(response);
 })
 
 //update功能
@@ -186,8 +203,7 @@ app.post('/update', function (req, res) {
         name: req.body.name,
         price: req.body.price,
     };
-
-
+    
     var response = {
         result: true,
         data: data
