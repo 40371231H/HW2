@@ -17,15 +17,7 @@ app.use(express.static('public'));
 
 var response = {
     result: true,
-    data: []
-};
-// for (let i = 0; i < response.data.length; i++) {
-//     console.log(response.data[i]);
-// }
-
-// 初始化資料
-MongoClient.connect(url, function (err, client) {
-    var docs = [{
+    data: [{
         id: 0,
         name: "小米路由器",
         price: 399,
@@ -39,7 +31,13 @@ MongoClient.connect(url, function (err, client) {
         count: 1,
         image: 'http://i01.appmifile.com/f/i/g/2016overseas/mijiaquanjingxiangji800.png?width=160&height=160'
     }]
-    response.data = docs;
+};
+// for (let i = 0; i < response.data.length; i++) {
+//     console.log(response.data[i]);
+// }
+
+// 初始化資料
+MongoClient.connect(url, function (err, client) {
     if (err) {
         response.result = false;
         response.message = "資料庫連接失敗，" + err.message;
